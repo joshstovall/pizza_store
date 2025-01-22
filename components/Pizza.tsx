@@ -12,6 +12,9 @@ interface PizzaProps {
   name: string;
   size: string;
   toppings: Topping[];
+}
+
+interface PizzaComponentProps extends PizzaProps {
   deleteCallback: (pizza: PizzaProps) => void;
   editCallback: (pizza: PizzaProps) => void;
   pizzaExists: (pizza: PizzaProps) => boolean;
@@ -25,18 +28,9 @@ const Pizza = ({
   deleteCallback,
   editCallback,
   pizzaExists
+}: PizzaComponentProps) => {
 
-}: PizzaProps) => {
-
-  const deletePizza = () => deleteCallback({
-    id,
-    name,
-    size,
-    toppings,
-    deleteCallback,
-    editCallback,
-    pizzaExists
-  });
+  const deletePizza = () => deleteCallback({ id, name, size, toppings });
 
   const saveCallback = (pizza: PizzaProps) => editCallback(pizza);
 
@@ -61,7 +55,14 @@ const Pizza = ({
         </List>
       </CardContent>
       <CardActions>
-        <EditPizza id={id} name={name} size={size} toppings={toppings} saveCallback={saveCallback} pizzaExists={pizzaExists} />
+        <EditPizza
+          id={id}
+          name={name}
+          size={size}
+          toppings={toppings}
+          saveCallback={saveCallback}
+          pizzaExists={pizzaExists}
+        />
         <Button onClick={deletePizza}>Delete</Button>
       </CardActions>
     </Card>

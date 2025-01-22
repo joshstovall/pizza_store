@@ -1,20 +1,51 @@
 import { useState } from 'react';
-import { Autocomplete, Avatar, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Autocomplete, Avatar, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField, SelectChangeEvent } from '@mui/material';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import availableToppings from '../const/availableToppings';
 
-const EditPizza = ({ id, name, size, toppings, saveCallback, pizzaExists }) => {
+type Topping = {
+  title: string;
+  emoji: string;
+  price: number;
+};
+
+interface PizzaProps {
+  id: string;
+  name: string;
+  size: string;
+  toppings: Topping[];
+}
+
+interface EditPizzaProps extends PizzaProps {
+  saveCallback: (pizza: PizzaProps) => void;
+  pizzaExists: (pizza: PizzaProps) => boolean;
+}
+
+const EditPizza = ({
+  id,
+  name,
+  size,
+  toppings,
+  saveCallback,
+  pizzaExists,
+}: EditPizzaProps) => {
   const [open, setOpen] = useState(false);
   const [_name, setName] = useState(name);
   const [_size, setSize] = useState(size);
-  const [_toppings, setToppings] = useState(toppings);
+  const [_toppings, setToppings] = useState<Topping[]>(toppings);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleChangeName = (event) => setName(event.target.value);
-  const handleChangeSize = (event) => setSize(event.target.value);
-  const handleChangeToppings = (event, value) => setToppings(value);
+  const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setName(event.target.value);
+  const handleChangeSize = (
+    event: SelectChangeEvent<string>
+  ) => setSize(event.target.value as string);
+  const handleChangeToppings = (
+    event: unknown,
+    value: Topping[]
+  ) => setToppings(value);
 
   const handleSave = () => {
     if (!_name || !_size || !_toppings.length) {
@@ -58,8 +89,11 @@ const EditPizza = ({ id, name, size, toppings, saveCallback, pizzaExists }) => {
             onChange={handleChangeToppings}
             value={_toppings}
             getOptionLabel={(option) => option.title}
-            renderOption={(props, option, { selected }) => (
-              <li {...props} key={option.title}>
+            renderOption={(props, option, { selected, index }) => (
+              <li
+                {...props}
+                key={`${option.title}-${index}`}
+              >
                 <Checkbox icon={<CheckBoxOutlineBlankIcon />} checkedIcon={<CheckBoxIcon />} style={{ marginRight: 8 }} checked={selected} />
                 {option.emoji} {option.title}
               </li>

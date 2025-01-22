@@ -17,18 +17,20 @@ interface PizzaProps {
   toppings: Topping[];
 }
 
-const pizzaExists = (pizzas: PizzaProps[], pizza: PizzaProps) => {
-  for (let i = 0; i < pizzas.length; i++) {
-    if (
-      pizzas[i].size === pizza.size &&
-      pizzas[i].toppings.map((e) => e.title).sort().toString() === pizza.toppings.map((e) => e.title).sort().toString() &&
-      pizzas[i].id !== pizza.id
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
+const pizzaExists = (pizzas: PizzaProps[], pizza: PizzaProps) =>
+  pizzas.some(
+    (p) =>
+      p.size === pizza.size &&
+      p.toppings
+        .map((e) => e.title)
+        .sort()
+        .toString() ===
+        pizza.toppings
+          .map((e) => e.title)
+          .sort()
+          .toString() &&
+      p.id !== pizza.id
+  );
 
 export default function Home() {
   const [pizzas, setPizzas] = useState<PizzaProps[]>([]);

@@ -1,20 +1,38 @@
 import { useState } from 'react';
 import availableToppings from '../const/availableToppings';
-import { Autocomplete, Avatar, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Autocomplete, Avatar, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField, SelectChangeEvent } from '@mui/material';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
-const NewPizza = ({ saveCallback, pizzaExists }) => {
+type Topping = {
+  title: string;
+  emoji: string;
+  price: number;
+};
+
+interface PizzaProps {
+  id: string;
+  name: string;
+  size: string;
+  toppings: Topping[];
+}
+
+interface NewPizzaProps {
+  saveCallback: (pizza: PizzaProps) => void;
+  pizzaExists: (pizza: PizzaProps) => boolean;
+}
+
+const NewPizza = ({ saveCallback, pizzaExists }: NewPizzaProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [size, setSize] = useState('Small');
-  const [toppings, setToppings] = useState([]);
+  const [toppings, setToppings] = useState<Topping[]>([]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleChangeName = (event) => setName(event.target.value);
-  const handleChangeSize = (event) => setSize(event.target.value);
-  const handleChangeToppings = (event, value) => setToppings(value);
+  const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => setName(event.target.value);
+  const handleChangeSize = (event: SelectChangeEvent<string>) => setSize(event.target.value as string);
+  const handleChangeToppings = (event: unknown, value: Topping[]) => setToppings(value);
 
   const handleSave = () => {
     if (!name || !size || !toppings.length) {
@@ -65,8 +83,11 @@ const NewPizza = ({ saveCallback, pizzaExists }) => {
             onChange={handleChangeToppings}
             value={toppings}
             getOptionLabel={(option) => option.title}
-            renderOption={(props, option, { selected }) => (
-              <li {...props} key={option.title}>
+            renderOption={(props, option, { selected, index }) => (
+              <li
+                {...props}
+                key={`${option.title}-${index}`}
+              >
                 <Checkbox icon={<CheckBoxOutlineBlankIcon />} checkedIcon={<CheckBoxIcon />} style={{ marginRight: 8 }} checked={selected} />
                 {option.emoji} {option.title}
               </li>

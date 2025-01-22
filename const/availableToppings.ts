@@ -1,6 +1,6 @@
 const availableToppings = [
   {
-    title: 'Cheeze',
+    title: 'Cheese',
     emoji: '🧀',
     price: 0.00
   },

@@ -13,9 +13,6 @@ interface PizzaProps {
   name: string;
   size: string;
   toppings: Topping[];
-  deleteCallback: (pizza: PizzaProps) => void;
-  editCallback: (pizza: PizzaProps) => void;
-  pizzaExists: (pizza: PizzaProps) => boolean;
 }
 
 interface PizzasProps {
@@ -41,7 +38,7 @@ const Pizzas = ({ pizzas, deleteCallback, editCallback, pizzaExists }: PizzasPro
                 name={pizza.name}
                 size={pizza.size}
                 toppings={pizza.toppings}
-                deleteCallback={() => deleteCallback(pizza)}
+                deleteCallback={deleteCallback}
                 editCallback={editCallback}
                 pizzaExists={pizzaExists}
               />

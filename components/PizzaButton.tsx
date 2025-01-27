@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, IconButton } from "@mui/material";
 import PizzaEditor from "./EditPizza";
-import { Topping, PizzaButtonProps } from "../types";
+import { PizzaButtonProps } from "../types";
 
 const PizzaButton = ({
   onSave,

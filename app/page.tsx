@@ -1,23 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import NewPizza from '../components/NewPizza';
-import Pizzas from '../components/Pizzas';
+import { useState } from "react";
+import PizzaButton from "../components/PizzaButton";
+import Pizzas from "../components/PizzaList";
+import EditToppings from "../components/EditToppings";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import EditIcon from "@mui/icons-material/Edit";
+import { Pizza, Topping } from "../types";
 
-interface Topping {
-  title: string;
-  emoji: string;
-  price: number;
-}
-
-interface PizzaProps {
-  id: string;
-  name: string;
-  size: string;
-  toppings: Topping[];
-}
-
-const pizzaExists = (pizzas: PizzaProps[], pizza: PizzaProps) =>
+const pizzaExists = (pizzas: Pizza[], pizza: Pizza) =>
   pizzas.some(
     (p) =>
       p.size === pizza.size &&
@@ -25,39 +16,60 @@ const pizzaExists = (pizzas: PizzaProps[], pizza: PizzaProps) =>
         .map((e) => e.title)
         .sort()
         .toString() ===
-        pizza.toppings
-          .map((e) => e.title)
-          .sort()
-          .toString() &&
+      pizza.toppings
+        .map((e) => e.title)
+        .sort()
+        .toString() &&
       p.id !== pizza.id
   );
 
 export default function Home() {
-  const [pizzas, setPizzas] = useState<PizzaProps[]>([]);
+  const [pizzas, setPizzas] = useState<Pizza[]>([]);
 
-  const saveCallback = (pizza: PizzaProps) => setPizzas((pizzas) => [...pizzas, pizza]);
-  const deleteCallback = (pizza: PizzaProps) => setPizzas(pizzas.filter((item) => item.id !== pizza.id));
-  const editCallback = (pizza: PizzaProps) => {
+  const saveCallback = (pizza: Pizza) => setPizzas((pizzas) => [...pizzas, pizza]);
+  const deleteCallback = (pizza: Pizza) => setPizzas(pizzas.filter((item) => item.id !== pizza.id));
+  const editCallback = (pizza: Pizza) => {
     const pizzaArray = [...pizzas];
     const pizzaIndex = pizzaArray.findIndex((obj) => obj.id === pizza.id);
     pizzaArray[pizzaIndex] = pizza;
     setPizzas(pizzaArray);
   };
 
+  const handleToppingUpdate = (oldTopping: Topping, newTopping: Topping) => {
+    const updatedPizzas = pizzas.map(pizza => ({
+      ...pizza,
+      toppings: pizza.toppings.map(t =>
+        t.title === oldTopping.title ? newTopping : t
+      )
+    }));
+    setPizzas(updatedPizzas);
+  };
+
   return (
     <>
       <header className="bg-gray-800 min-h-[20vh] flex flex-col items-center justify-center text-white text-[calc(10px+2vmin)]">
-        <h1 className="text-4xl font-bold text-center">Welcome to Pizza Palace</h1>
+        <h1 className="text-4xl font-bold text-center mb-4">Welcome to Pizza Palace</h1>
+        <div className="flex gap-4">
+          <PizzaButton
+            buttonText="Add New Pizza"
+            onSave={saveCallback}
+            pizzaExists={(pizza) => pizzaExists(pizzas, pizza)}
+            variant="contained"
+            dialogTitle="Create a new pizza below 🍕"
+            startIcon={<AddCircleOutlineIcon />}
+          />
+          <EditToppings
+            pizzas={pizzas}
+            onToppingUpdate={handleToppingUpdate}
+            startIcon={<EditIcon />}
+          />
+        </div>
       </header>
-      <NewPizza
-        saveCallback={saveCallback}
-        pizzaExists={(pizza: PizzaProps) => pizzaExists(pizzas, pizza)}
-      />
       <Pizzas
         pizzas={pizzas}
         deleteCallback={deleteCallback}
         editCallback={editCallback}
-        pizzaExists={(pizza: PizzaProps) => pizzaExists(pizzas, pizza)}
+        pizzaExists={(pizza: Pizza) => pizzaExists(pizzas, pizza)}
       />
     </>
   );
